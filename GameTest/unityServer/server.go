@@ -113,7 +113,12 @@ func handleClient(conn net.Conn) {
 
 		action.PlayerID = clientID
 		fmt.Printf("从客户端 %s 接收到消息: %+v\n", clientID, action)
-
+		// 如果收到感染消息，就广播给其他人，然后我要让这个人下线
+		if action.Action == "infected" {
+			//给其他人广播他被感染的消息，然后break，再给其他人广播他离开的消息
+			broadcastMessage(action)
+			break
+		}
 		if action.Action == "move" {
 			lock.Lock()
 			clientPositions[action.PlayerID] = action
@@ -131,9 +136,8 @@ func handleClient(conn net.Conn) {
 				broadcastMessage(joinMsg)
 				hasBroadcastedJoin = true
 			}
+			broadcastMessage(action)
 		}
-
-		broadcastMessage(action)
 	}
 
 	// Inform other clients that this player has left

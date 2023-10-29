@@ -23,7 +23,7 @@ public class TCPConnection : MonoBehaviour
 
     void Start()
     {
-        client = new TcpClient("127.0.0.1", 8000);
+        client = new TcpClient("13.48.183.56", 8000);
         NetworkStream stream = client.GetStream();
         writer = new StreamWriter(stream);
         reader = new StreamReader(stream);
@@ -86,18 +86,11 @@ public class TCPConnection : MonoBehaviour
         ClientAction action = JsonUtility.FromJson<ClientAction>(message);
         switch (action.Action)
         {
-            //case "myID":
-            //    Debug.Log($"MyID action for PlayerID: {action.PlayerID}, Order: {action.Order}");
-            //    localPlayer.PlayerID = action.PlayerID;
-            //    localPlayer.Order = action.Order;
-            //    if (localPlayer.Order == 1)
-            //    {
-            //        localPlayer.isBoss = true;
-            //    }
-            //    break;
             case "join":
                 Debug.Log($"Join action for PlayerID: {action.PlayerID}");
                 OtherPlayer.SpawnOtherPlayer(action.PlayerID, new Vector2(action.X, action.Y),action.Order);
+
+                localPlayer.orderToPlayerIDMap[action.Order] = action.PlayerID;
                 break;
             case "move":
                 if (action.PlayerID != localPlayer.PlayerID)
@@ -106,6 +99,13 @@ public class TCPConnection : MonoBehaviour
                     OtherPlayer.MoveOtherPlayer(action.PlayerID, new Vector2(action.X, action.Y), action.Direction);
                 }
                 break;
+            case "infected":
+                //被感染可以什么都不做，因为被感染的玩家会退出游戏
+                Debug.Log($"Player with PlayerID: {action.PlayerID} got infected");
+                //Debug.Log($"Leave action for PlayerID: {action.PlayerID}");
+                //// 首先和leave一样，删除感染的玩家
+                //OtherPlayer.RemoveOtherPlayer(action.PlayerID);
+                break;
             case "leave":
                 Debug.Log($"Leave action for PlayerID: {action.PlayerID}");
                 OtherPlayer.RemoveOtherPlayer(action.PlayerID);
@@ -113,6 +113,16 @@ public class TCPConnection : MonoBehaviour
         }
     }
 
+    //void EndGame()
+    //{
+    //    // 显示游戏结束界面或其他逻辑
+    //    // ... 
+
+    //    // 断开与服务器的连接
+    //    if (receiveThread != null)
+    //        receiveThread.Abort();
+    //    client.Close();
+    //}
 
     public void SendMessageToServer(string message)
     {

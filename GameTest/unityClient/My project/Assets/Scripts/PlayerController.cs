@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -6,6 +7,9 @@ public class PlayerController : MonoBehaviour
     public string PlayerID; // This will be set by the server
     public int Order;
     private TCPConnection connection;
+
+    //增加一个映射，用于根据order找到对应的playerID
+    public Dictionary<int, string> orderToPlayerIDMap = new Dictionary<int, string>();
 
     public Animator animator;
     public bool isBoss=false;
@@ -22,15 +26,6 @@ public class PlayerController : MonoBehaviour
         float randomY = UnityEngine.Random.Range(-3.0f, 3.0f);  // 假设场景高度是从-10到10
         transform.position = new Vector2(randomX, randomY);
 
-        // 创建一个ClientAction并发送给服务器
-        //ClientAction initialPositionAction = new ClientAction
-        //{
-        //    Action = "move",
-        //    X = transform.position.x,
-        //    Y = transform.position.y,
-        //    Direction = transform.localScale.x,
-        //};
-        //connection.SendMessageToServer(JsonUtility.ToJson(initialPositionAction));
     }
 
     void SendInitialPosition()
@@ -77,5 +72,51 @@ public class PlayerController : MonoBehaviour
             };
             connection.SendMessageToServer(JsonUtility.ToJson(action));
         }
+
+        if (!isBoss)
+        {
+            CheckDistanceWithInfectedHorse();
+        }
+    }
+
+    private void CheckDistanceWithInfectedHorse()
+    {
+        string infectedHorsePlayerID = GetPlayerIDByOrder(1);
+
+        // 获取感染马的位置
+        Vector2 infectedHorsePosition = OtherPlayer.GetPositionOfPlayer(infectedHorsePlayerID);
+        float distance = Vector2.Distance(transform.position, infectedHorsePosition);
+
+        // 如果距离小于阈值，发送被感染消息给服务器
+        if (distance < 0.5f)  // 可根据需要调整这个阈值
+        {
+            ClientAction infectedAction = new ClientAction
+            {
+                Action = "infected",
+                PlayerID = PlayerID
+            };
+            connection.SendMessageToServer(JsonUtility.ToJson(infectedAction));
+      
+            // 退出游戏
+            QuitGame();
+        }
+    }
+
+    private void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    public string GetPlayerIDByOrder(int order)
+    {
+        if (orderToPlayerIDMap.ContainsKey(order))
+        {
+            return orderToPlayerIDMap[order];
+        }
+        return null;  // 或返回其他默认值
     }
 }
