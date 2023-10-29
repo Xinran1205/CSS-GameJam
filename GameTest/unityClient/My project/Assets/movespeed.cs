@@ -1,6 +1,5 @@
 using UnityEngine;
 using WebSocketSharp;
-using System.Text;
 using System;
 using System.Collections.Generic;
 
@@ -13,50 +12,58 @@ public class MoveSquare : MonoBehaviour
     private string playerID;
 
     private Dictionary<string, GameObject> otherPlayers = new Dictionary<string, GameObject>();
-
     private Queue<Action> mainThreadActions = new Queue<Action>();
 
     void Start()
     {
+        ConnectToServer();
+    }
+
+    void ConnectToServer()
+    {
         Debug.Log("Connecting to " + serverURL);
         websocket = new WebSocket(serverURL);
-
+        websocket.OnOpen += OnWebSocketOpen;
         websocket.OnMessage += OnMessageReceived;
         websocket.OnClose += OnWebSocketClosed;
-
+        websocket.OnError += OnWebSocketError;
         websocket.Connect();
+    }
+
+    private void OnWebSocketOpen(object sender, EventArgs e)
+    {
+        Debug.Log("WebSocket Connected!");
+    }
+
+    private void OnWebSocketError(object sender, ErrorEventArgs e)
+    {
+        Debug.LogError("WebSocket Error: " + e.Message);
+        // Optionally, implement reconnect logic here
     }
 
     private void OnMessageReceived(object sender, MessageEventArgs e)
     {
         mainThreadActions.Enqueue(() =>
         {
-            //这里全部是处理服务器发来的消息
-            Debug.Log("message received");
-            Debug.Log("Received data: " + e.Data);
+            Debug.Log("message received: " + e.Data);
             try
             {
                 ClientAction action = JsonUtility.FromJson<ClientAction>(e.Data);
-
                 if (action == null)
                 {
                     Debug.LogError("Failed to parse e.Data into ClientAction.");
                     return;
                 }
 
-                if (action.Action == "id")
-                {
-                    playerID = action.PlayerID;
-                    return;
-                }
-
                 switch (action.Action)
                 {
+                    case "id":
+                        playerID = action.PlayerID;
+                        break;
                     case "join":
                         HandlePlayerJoined(action);
                         break;
                     case "move":
-                        Debug.Log("new move");
                         HandlePlayerMoved(action);
                         break;
                     case "leave":
@@ -66,26 +73,24 @@ public class MoveSquare : MonoBehaviour
                         Debug.LogWarning("Unknown action type: " + action.Action);
                         break;
                 }
-
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error while parsing e.Data: " + ex.Message);  // 打印异常信息
+                Debug.LogError("Error while parsing e.Data: " + ex.Message);
             }
         });
-        
     }
 
     private void OnWebSocketClosed(object sender, CloseEventArgs e)
     {
-        Debug.Log("WebSocket Closed!");
+        Debug.Log("WebSocket Closed! Reason: " + e.Reason);
+        // Optionally, implement reconnect logic here
     }
 
     private void HandlePlayerJoined(ClientAction action)
     {
-        //打印玩家加入的消息
         Debug.Log("Player " + action.PlayerID + " joined!");
-        if (action.PlayerID == playerID) return;  // 忽略自己
+        if (action.PlayerID == playerID) return;
 
         GameObject newPlayer = Instantiate(playerPrefab);
         newPlayer.transform.position = new Vector3(action.X, action.Y, 0);
@@ -94,7 +99,7 @@ public class MoveSquare : MonoBehaviour
 
     private void HandlePlayerMoved(ClientAction action)
     {
-        if (action.PlayerID == playerID) return;  // 忽略自己
+        if (action.PlayerID == playerID) return;
 
         if (otherPlayers.ContainsKey(action.PlayerID))
         {

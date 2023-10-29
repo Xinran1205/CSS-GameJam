@@ -1,112 +1,138 @@
 package main
 
 import (
-	"crypto/rand"
-	"encoding/hex"
-	"github.com/gorilla/websocket"
-	"log"
-	"net/http"
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"net"
+	"sync"
 )
 
-// 定义客户端的映射
-var clients = make(map[*websocket.Conn]string)
-
-// 定义广播的通道，用于接收和发送客户端操作数据
-var broadcast = make(chan ClientAction)
-
-// 配置WebSocket升级器,是用于将 HTTP 连接升级为 WebSocket 连接的结构体。
-var upgrader = websocket.Upgrader{}
-
-// 定义客户端操作的数据结构
 type ClientAction struct {
-	Action   string  `json:"Action"` // "join", "move", "leave"
+	Action   string  `json:"Action"`
 	PlayerID string  `json:"PlayerID"`
-	X        float32 `json:"x,omitempty"`
-	Y        float32 `json:"y,omitempty"`
+	X        float64 `json:"X"`
+	Y        float64 `json:"Y"`
 }
 
-// 处理WebSocket连接的函数,当有新的 WebSocket 连接时，它会为该连接生成一个唯一的 playerID，然后发送回客户端。
-func handleConnections(w http.ResponseWriter, r *http.Request) {
-	//使用 upgrader 将 HTTP 请求升级为 WebSocket 连接。
-	ws, err := upgrader.Upgrade(w, r, nil)
+var clients = make(map[net.Conn]string)
+var clientPositions = make(map[string]ClientAction) // 保存每个客户端的最后位置
+var lock sync.Mutex
+
+func main() {
+	listener, err := net.Listen("tcp", ":8000")
 	if err != nil {
-		log.Fatalf("WebSocket upgrade failed: %v", err)
+		fmt.Println("Error starting server:", err)
 		return
 	}
-	defer ws.Close()
+	fmt.Println("服务器启动成功，监听端口 :8000")
 
-	// 生成唯一的ID
-	playerID := generateUniqueID()
+	defer listener.Close()
 
-	// 将新的WebSocket连接添加到clients映射中
-	clients[ws] = playerID
-
-	// 为新客户端发送其playerID
-	idMessage := ClientAction{
-		Action:   "id", // 新增的动作类型，表示ID消息
-		PlayerID: playerID,
-	}
-
-	err = ws.WriteJSON(idMessage) // 发送消息回客户端
-	if err != nil {
-		log.Printf("Error sending playerID to client: %v", err)
-		return
-	}
-
-	// 把新用户join的消息发送到广播通道
-	joinAction := ClientAction{
-		Action:   "join",
-		PlayerID: playerID,
-	}
-	broadcast <- joinAction
-
-	// 循环读取当前连接的客户端发送的消息
 	for {
-		var action ClientAction
-		err := ws.ReadJSON(&action)
+		conn, err := listener.Accept()
 		if err != nil {
-			log.Printf("Error reading JSON: %v", err)
+			fmt.Println("Error accepting connection:", err)
+			continue
+		}
+		fmt.Printf("新的客户端已连接: %s\n", conn.RemoteAddr().String())
 
-			// 当客户端断开时，发送leave消息
-			leaveAction := ClientAction{
-				Action:   "leave",
-				PlayerID: action.PlayerID, // 使用之前的PlayerID
-			}
-			broadcast <- leaveAction
+		go handleClient(conn)
+	}
+}
 
-			delete(clients, ws)
+func handleClient(conn net.Conn) {
+	defer conn.Close()
+
+	clientID := fmt.Sprintf("%s", conn.RemoteAddr())
+
+	lock.Lock()
+	clients[conn] = clientID
+	// 向这个新客户端发送 所有其他客户端的 "join" 信息
+	for _, action := range clients {
+		if action != clientID {
+			sendMessage(ClientAction{
+				Action:   "join",
+				PlayerID: action,
+				X:        clientPositions[action].X,
+				Y:        clientPositions[action].Y,
+			}, conn)
+		}
+	}
+
+	lock.Unlock()
+
+	// Inform other clients that a new player has joined
+	joinMsg := ClientAction{
+		Action:   "join",
+		PlayerID: clientID,
+	}
+	broadcastMessage(joinMsg)
+
+	reader := bufio.NewReader(conn)
+
+	for {
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Printf("客户端 %s 断开连接\n", clientID)
 			break
 		}
 
-		// 打印接收到的信息
-		log.Printf("Received action from player %s: %s, x=%f, y=%f", action.PlayerID, action.Action, action.X, action.Y)
+		var action ClientAction
+		err = json.Unmarshal([]byte(message), &action)
+		if err != nil {
+			fmt.Println("Error unmarshalling JSON:", err)
+			continue
+		}
 
-		// 将读取到的信息发送到广播通道
-		broadcast <- action
+		action.PlayerID = clientID
+		fmt.Printf("从客户端 %s 接收到消息: %+v\n", clientID, action)
+
+		if action.Action == "move" {
+			lock.Lock()
+			clientPositions[action.PlayerID] = action
+			lock.Unlock()
+		}
+
+		broadcastMessage(action)
 	}
+
+	// Inform other clients that this player has left
+	leaveMsg := ClientAction{
+		Action:   "leave",
+		PlayerID: clientID,
+	}
+	broadcastMessage(leaveMsg)
+
+	lock.Lock()
+	delete(clients, conn)
+	delete(clientPositions, clientID) // 在玩家离开时删除其位置
+	lock.Unlock()
 }
 
-// 处理接收到的信息并将其广播到所有连接的WebSocket客户端
-func handleMessages() {
-	for {
-		action := <-broadcast
-		for client := range clients {
-			err := client.WriteJSON(action)
-			if err != nil {
-				log.Printf("Error writing JSON: %v", err)
-				client.Close()
-				delete(clients, client)
-			}
+func broadcastMessage(action ClientAction) {
+	message, err := json.Marshal(action)
+	if err != nil {
+		fmt.Println("Error marshalling JSON:", err)
+		return
+	}
+
+	for otherConn := range clients {
+		_, err := otherConn.Write(append(message, '\n'))
+		if err != nil {
+			fmt.Println("Error sending message:", err)
 		}
 	}
 }
 
-// generateUniqueID 生成一个唯一的ID
-func generateUniqueID() string {
-	buf := make([]byte, 16) // 创建一个16字节的缓冲区
-	_, err := rand.Read(buf)
+func sendMessage(action ClientAction, conn net.Conn) {
+	message, err := json.Marshal(action)
 	if err != nil {
-		log.Fatalf("Failed to generate unique ID: %v", err)
+		fmt.Println("Error marshalling JSON:", err)
+		return
 	}
-	return hex.EncodeToString(buf) // 将字节数组转换为十六进制字符串
+	_, err = conn.Write(append(message, '\n'))
+	if err != nil {
+		fmt.Println("Error sending message:", err)
+	}
 }
