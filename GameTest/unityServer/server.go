@@ -9,14 +9,23 @@ import (
 )
 
 type ClientAction struct {
-	Action   string  `json:"Action"`
-	PlayerID string  `json:"PlayerID"`
-	X        float64 `json:"X"`
-	Y        float64 `json:"Y"`
+	Action    string  `json:"Action"`
+	PlayerID  string  `json:"PlayerID"`
+	X         float64 `json:"X"`
+	Y         float64 `json:"Y"`
+	Direction float64 `json:"Direction"`
+	Order     int     `json:"Order"` // 新增字段
 }
 
+var clientCounter int = 0
+
+// keep track of all clients, key: connection, value: clientID
 var clients = make(map[net.Conn]string)
-var clientPositions = make(map[string]ClientAction) // 保存每个客户端的最后位置
+
+// keep track of the last position of each client, key: clientID, value: ClientAction
+var clientPositions = make(map[string]ClientAction)
+
+// lock for updating clients and clientPositions
 var lock sync.Mutex
 
 func main() {
@@ -25,7 +34,7 @@ func main() {
 		fmt.Println("Error starting server:", err)
 		return
 	}
-	fmt.Println("服务器启动成功，监听端口 :8000")
+	fmt.Println("server started on :8000")
 
 	defer listener.Close()
 
@@ -35,8 +44,9 @@ func main() {
 			fmt.Println("Error accepting connection:", err)
 			continue
 		}
-		fmt.Printf("新的客户端已连接: %s\n", conn.RemoteAddr().String())
+		fmt.Println("new client connected:", conn.RemoteAddr().String())
 
+		// handle each client in a separate goroutine
 		go handleClient(conn)
 	}
 }
@@ -46,38 +56,56 @@ func handleClient(conn net.Conn) {
 
 	clientID := fmt.Sprintf("%s", conn.RemoteAddr())
 
+	//这里要注意，我的服务器每次要重新开，不然就会乱了
+	lock.Lock()
+	clientCounter++
+	lock.Unlock()
+
+	// 把这个clientID发回给客户端，作为客户端的PlayerID
+	sendMessage(ClientAction{
+		Action:   "myID",
+		PlayerID: clientID,
+		Order:    clientCounter,
+	}, conn)
+
 	lock.Lock()
 	clients[conn] = clientID
-	// 向这个新客户端发送 所有其他客户端的 "join" 信息
-	for _, action := range clients {
-		if action != clientID {
+
+	// send all existing clients' last positions to the new client
+	for _, clientIDTmp := range clients {
+		//如果不是自己，就把这个人的位置信息发给自己
+		if clientIDTmp != clientID {
 			sendMessage(ClientAction{
-				Action:   "join",
-				PlayerID: action,
-				X:        clientPositions[action].X,
-				Y:        clientPositions[action].Y,
+				Action:    "join",
+				PlayerID:  clientIDTmp,
+				X:         clientPositions[clientIDTmp].X,
+				Y:         clientPositions[clientIDTmp].Y,
+				Direction: clientPositions[clientIDTmp].Direction,
+				Order:     clientPositions[clientIDTmp].Order,
 			}, conn)
 		}
 	}
-
 	lock.Unlock()
 
-	// Inform other clients that a new player has joined
+	// Inform other clients (broadcast) that a new player has joined
 	joinMsg := ClientAction{
 		Action:   "join",
 		PlayerID: clientID,
+		Order:    clientCounter,
 	}
 	broadcastMessage(joinMsg)
 
 	reader := bufio.NewReader(conn)
 
+	// only exit this for loop when the client disconnects
 	for {
 		message, err := reader.ReadString('\n')
 		if err != nil {
-			fmt.Printf("客户端 %s 断开连接\n", clientID)
+			fmt.Printf("client %s disconnected\n", clientID)
 			break
 		}
 
+		// unmarshal the JSON message into a ClientAction object
 		var action ClientAction
 		err = json.Unmarshal([]byte(message), &action)
 		if err != nil {
@@ -105,19 +133,24 @@ func handleClient(conn net.Conn) {
 	broadcastMessage(leaveMsg)
 
 	lock.Lock()
+	clientCounter--
 	delete(clients, conn)
-	delete(clientPositions, clientID) // 在玩家离开时删除其位置
+	delete(clientPositions, clientID)
 	lock.Unlock()
 }
 
+// broadcastMessage sends a message to all connected clients
 func broadcastMessage(action ClientAction) {
 	message, err := json.Marshal(action)
 	if err != nil {
 		fmt.Println("Error marshalling JSON:", err)
 		return
 	}
-
+	//不广播给自己
 	for otherConn := range clients {
+		if clients[otherConn] == action.PlayerID {
+			continue
+		}
 		_, err := otherConn.Write(append(message, '\n'))
 		if err != nil {
 			fmt.Println("Error sending message:", err)
