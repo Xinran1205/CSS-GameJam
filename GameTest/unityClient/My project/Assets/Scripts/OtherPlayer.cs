@@ -54,4 +54,13 @@ public class OtherPlayer : MonoBehaviour
             otherPlayers[playerID].transform.localScale = new Vector3(direction, 1, 1);
         }
     }
+
+    public static Vector2 GetPositionOfPlayer(string playerID)
+    {
+        if (otherPlayers.ContainsKey(playerID))
+        {
+            return otherPlayers[playerID].transform.position;
+        }
+        return Vector2.zero;  // 返回一个默认值
+    }
 }
