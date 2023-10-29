@@ -18,6 +18,9 @@ public class TCPConnection : MonoBehaviour
 
     public Queue<string> messageQueue = new Queue<string>();
 
+    public delegate void ConnectedToServerHandler();
+    public event ConnectedToServerHandler OnConnectedToServer;
+
     void Start()
     {
         client = new TcpClient("127.0.0.1", 8000);
@@ -25,8 +28,15 @@ public class TCPConnection : MonoBehaviour
         writer = new StreamWriter(stream);
         reader = new StreamReader(stream);
 
+        //直接从服务器读取初始消息
+        string initialMessage = reader.ReadLine();
+        //然后在这初始化playerId和order
+        HandleInitialMessage(initialMessage);
+
         receiveThread = new Thread(ReceiveMessages);
         receiveThread.Start();
+
+        OnConnectedToServer?.Invoke();
     }
 
     void Update()
@@ -51,21 +61,40 @@ public class TCPConnection : MonoBehaviour
         }
     }
 
+    void HandleInitialMessage(string message)
+    {
+        ClientAction action = JsonUtility.FromJson<ClientAction>(message);
+        if (action.Action == "myID")
+        {
+            Debug.Log($"Initial MyID action for PlayerID: {action.PlayerID}, Order: {action.Order}");
+            localPlayer.PlayerID = action.PlayerID;
+            localPlayer.Order = action.Order;
+            if (localPlayer.Order == 1)
+            {
+                localPlayer.isBoss = true;
+            }
+        }
+        else
+        {
+            Debug.LogError("Expected 'myID' as the initial message but received: " + action.Action);
+        }
+    }
+
     void HandleMessage(string message)
     {
         Debug.Log($"Handling message: {message}"); // 打印正在处理的消息
         ClientAction action = JsonUtility.FromJson<ClientAction>(message);
         switch (action.Action)
         {
-            case "myID":
-                Debug.Log($"MyID action for PlayerID: {action.PlayerID}, Order: {action.Order}");
-                localPlayer.PlayerID = action.PlayerID;
-                localPlayer.Order = action.Order;
-                if (localPlayer.Order < 2)
-                {
-                    localPlayer.isBoss = true;
-                }
-                break;
+            //case "myID":
+            //    Debug.Log($"MyID action for PlayerID: {action.PlayerID}, Order: {action.Order}");
+            //    localPlayer.PlayerID = action.PlayerID;
+            //    localPlayer.Order = action.Order;
+            //    if (localPlayer.Order == 1)
+            //    {
+            //        localPlayer.isBoss = true;
+            //    }
+            //    break;
             case "join":
                 Debug.Log($"Join action for PlayerID: {action.PlayerID}");
                 OtherPlayer.SpawnOtherPlayer(action.PlayerID, new Vector2(action.X, action.Y),action.Order);
@@ -100,7 +129,8 @@ public class TCPConnection : MonoBehaviour
         ClientAction leaveAction = new ClientAction
         {
             Action = "leave",
-            PlayerID = localPlayer.PlayerID
+            PlayerID = localPlayer.PlayerID,
+            Order = localPlayer.Order
         };
         SendMessageToServer(JsonUtility.ToJson(leaveAction));
 
