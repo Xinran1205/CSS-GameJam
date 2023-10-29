@@ -13,6 +13,9 @@ public class TCPConnection : MonoBehaviour
 
     public PlayerController localPlayer;
 
+    public GameObject playerPrefab;
+    public GameObject playerPrefab2;
+
     public Queue<string> messageQueue = new Queue<string>();
 
     void Start()
@@ -54,15 +57,24 @@ public class TCPConnection : MonoBehaviour
         ClientAction action = JsonUtility.FromJson<ClientAction>(message);
         switch (action.Action)
         {
+            case "myID":
+                Debug.Log($"MyID action for PlayerID: {action.PlayerID}, Order: {action.Order}");
+                localPlayer.PlayerID = action.PlayerID;
+                localPlayer.Order = action.Order;
+                if (localPlayer.Order < 2)
+                {
+                    localPlayer.isBoss = true;
+                }
+                break;
             case "join":
                 Debug.Log($"Join action for PlayerID: {action.PlayerID}");
-                OtherPlayer.SpawnOtherPlayer(action.PlayerID, new Vector2(action.X, action.Y));
+                OtherPlayer.SpawnOtherPlayer(action.PlayerID, new Vector2(action.X, action.Y),action.Order);
                 break;
             case "move":
                 if (action.PlayerID != localPlayer.PlayerID)
                 {
                     Debug.Log($"Move action for PlayerID: {action.PlayerID}");
-                    OtherPlayer.MoveOtherPlayer(action.PlayerID, new Vector2(action.X, action.Y));
+                    OtherPlayer.MoveOtherPlayer(action.PlayerID, new Vector2(action.X, action.Y), action.Direction);
                 }
                 break;
             case "leave":
@@ -105,4 +117,6 @@ public class ClientAction
     public string PlayerID;
     public float X;
     public float Y;
+    public float Direction;
+    public int Order;
 }
