@@ -56,10 +56,8 @@ func handleClient(conn net.Conn) {
 
 	clientID := fmt.Sprintf("%s", conn.RemoteAddr())
 
-	//这里要注意，我的服务器每次要重新开，不然就会乱了
 	lock.Lock()
 	clientCounter++
-	lock.Unlock()
 
 	// 把这个clientID发回给客户端，作为客户端的PlayerID
 	sendMessage(ClientAction{
@@ -68,7 +66,6 @@ func handleClient(conn net.Conn) {
 		Order:    clientCounter,
 	}, conn)
 
-	lock.Lock()
 	clients[conn] = clientID
 
 	// send all existing clients' last positions to the new client
@@ -88,15 +85,16 @@ func handleClient(conn net.Conn) {
 	lock.Unlock()
 
 	// Inform other clients (broadcast) that a new player has joined
-	joinMsg := ClientAction{
-		Action:   "join",
-		PlayerID: clientID,
-		Order:    clientCounter,
-	}
-	broadcastMessage(joinMsg)
+	// 把他自己发给其他人，这个地方有bug
+	//joinMsg := ClientAction{
+	//	Action:   "join",
+	//	PlayerID: clientID,
+	//	Order:    clientCounter,
+	//}
+	//broadcastMessage(joinMsg)
 
+	hasBroadcastedJoin := false
 	reader := bufio.NewReader(conn)
-
 	// only exit this for loop when the client disconnects
 	for {
 		message, err := reader.ReadString('\n')
@@ -120,6 +118,19 @@ func handleClient(conn net.Conn) {
 			lock.Lock()
 			clientPositions[action.PlayerID] = action
 			lock.Unlock()
+
+			if !hasBroadcastedJoin {
+				joinMsg := ClientAction{
+					Action:    "join",
+					PlayerID:  clientID,
+					X:         action.X,
+					Y:         action.Y,
+					Direction: action.Direction,
+					Order:     clientCounter,
+				}
+				broadcastMessage(joinMsg)
+				hasBroadcastedJoin = true
+			}
 		}
 
 		broadcastMessage(action)

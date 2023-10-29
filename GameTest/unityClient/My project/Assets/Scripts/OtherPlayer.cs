@@ -17,7 +17,7 @@ public class OtherPlayer : MonoBehaviour
 
         GameObject playerPrefab;
        
-        if (Order <2)
+        if (Order == 1)
         {
             playerPrefab = FindObjectOfType<TCPConnection>().playerPrefab2;
         } else {
