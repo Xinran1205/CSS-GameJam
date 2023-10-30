@@ -1,0 +1,393 @@
+fileFormatVersion: 2
+guid: 4d58bc12262e76040a130c79a34f82b5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7171242423892303964
+    second: V1_WallTiles_0
+  - first:
+      213: -5525645130274110405
+    second: H5_WallTiles_1
+  - first:
+      213: 7330411255841488025
+    second: V2_WallTiles_2
+  - first:
+      213: 3899612455587163182
+    second: V3_WallTiles_3
+  - first:
+      213: 6861315946886594790
+    second: V4_WallTiles_4
+  - first:
+      213: -7487598158250410749
+    second: H2_WallTiles_5
+  - first:
+      213: -1984462538215096881
+    second: Repeat3_WallTiles_6
+  - first:
+      213: -6523334555459242297
+    second: H4_WallTiles_7
+  - first:
+      213: 2001295959875810404
+    second: Repeat1_WallTiles_8
+  - first:
+      213: 333306374016542641
+    second: H6_DungeonWallTiles_9
+  - first:
+      213: 216850059728359375
+    second: H7_WallTiles_10
+  - first:
+      213: -5751794854050388275
+    second: H1_WallTiles_11
+  - first:
+      213: 609158927897737126
+    second: Tinted_WallTiles_12
+  - first:
+      213: -7492770231571634132
+    second: H3_WallTiles_13
+  - first:
+      213: -1254356694275527506
+    second: H8_WallTiles_14
+  - first:
+      213: -4729257109912261695
+    second: DoorTL_WallTiles_15
+  - first:
+      213: -1644776373306472895
+    second: DoorTM_WallTiles_16
+  - first:
+      213: 5654757833078730701
+    second: DoorTR_WallTiles_17
+  - first:
+      213: -2412755840708792203
+    second: DoorBL_WallTiles_18
+  - first:
+      213: -3207387508226480730
+    second: DoorBR_WallTiles_19
+  - first:
+      213: 6001727014483959143
+    second: WallTiles_20
+  - first:
+      213: -2816085319816459297
+    second: WallTiles_21
+  - first:
+      213: 669414927726043239
+    second: WallTiles_22
+  - first:
+      213: -7217348871357176810
+    second: WallTiles_23
+  - first:
+      213: -2784588437047556075
+    second: WallTiles_24
+  - first:
+      213: 7835142486446003816
+    second: WallTiles_25
+  - first:
+      213: 3244145816730369063
+    second: WallTiles_26
+  - first:
+      213: -4789548814206109747
+    second: WallTiles_27
+  - first:
+      213: 2390757272314868177
+    second: WallTiles_28
+  - first:
+      213: 7973958641827522465
+    second: DoorTop_WallTiles_29
+  - first:
+      213: 9175820068487298826
+    second: RedWall_WallTiles_30
+  - first:
+      213: -355015002225083662
+    second: WallTiles_Visualization_1
+  - first:
+      213: 122382589700334822
+    second: WallTiles_Visualization_2
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 8
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WallTiles_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 72
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77a6faebd3acb0344b23836817d13dc3
+      internalID: -901409933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallTiles_1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 96
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71d4fb4e185e6c843b286f36cef9ec6f
+      internalID: 2079718193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallTiles_2
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 72
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 134e4d9735cd9ca42ab28fb170945a7d
+      internalID: 280563683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallTiles_3
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 48
+        width: 24
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85dae2ebd133551419fdec8102e5972a
+      internalID: -349003440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallTiles_4
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 56
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c704f9da87fcf14faf2c6ae4941879d
+      internalID: 1132288545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallTiles_5
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 32
+        width: 24
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d18a1e51d95c73944a80c8586c059892
+      internalID: 1439297590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallTiles_6
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 8
+        width: 24
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 124072e09e8afad4ea92d3f4e447b902
+      internalID: -2070929700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      WallTiles_0: -901409933
+      WallTiles_1: 2079718193
+      WallTiles_2: 280563683
+      WallTiles_3: -349003440
+      WallTiles_4: 1132288545
+      WallTiles_5: 1439297590
+      WallTiles_6: -2070929700
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

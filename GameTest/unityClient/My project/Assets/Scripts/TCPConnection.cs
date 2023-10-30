@@ -100,11 +100,11 @@ public class TCPConnection : MonoBehaviour
                 }
                 break;
             case "infected":
-                //被感染可以什么都不做，因为被感染的玩家会退出游戏
+                //从其他游戏世界中删除被感染的玩家
                 Debug.Log($"Player with PlayerID: {action.PlayerID} got infected");
                 //Debug.Log($"Leave action for PlayerID: {action.PlayerID}");
                 //// 首先和leave一样，删除感染的玩家
-                //OtherPlayer.RemoveOtherPlayer(action.PlayerID);
+                OtherPlayer.RemoveOtherPlayer(action.PlayerID);
                 break;
             case "leave":
                 Debug.Log($"Leave action for PlayerID: {action.PlayerID}");
