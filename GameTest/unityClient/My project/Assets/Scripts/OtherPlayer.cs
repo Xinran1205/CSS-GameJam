@@ -51,7 +51,7 @@ public class OtherPlayer : MonoBehaviour
         if (otherPlayers.ContainsKey(playerID))
         {
             otherPlayers[playerID].transform.position = position;
-            otherPlayers[playerID].transform.localScale = new Vector3(direction, 1, 1);
+            otherPlayers[playerID].transform.localScale = new Vector3(direction, 4, 1);
         }
     }
 
