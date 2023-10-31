@@ -5,7 +5,7 @@
 ## Game Name:    ECO QUEST
 
 ### Description
-This is a project from the GameJam competition organized by the UNIVERSITY OF BRISTOL COMPUTER SCIENCE SOCIETY. Our team uniquely presents a multiplayer online game focused around the theme of environmental pollution.
+This is a project crafted during a 24-hour GameJam contest organized by the UNIVERSITY OF BRISTOL COMPUTER SCIENCE SOCIETY. Our team uniquely presents a multiplayer online game centered around the theme of environmental pollution.
 
 ### Gameplay
 - One player takes on the role of an infected horse.
