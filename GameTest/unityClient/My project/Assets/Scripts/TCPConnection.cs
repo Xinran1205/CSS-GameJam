@@ -23,7 +23,7 @@ public class TCPConnection : MonoBehaviour
 
     void Start()
     {
-        client = new TcpClient("13.48.183.56", 8000);
+        client = new TcpClient("13.50.9.53", 8000);
         NetworkStream stream = client.GetStream();
         writer = new StreamWriter(stream);
         reader = new StreamReader(stream);
