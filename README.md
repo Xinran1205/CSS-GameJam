@@ -12,8 +12,8 @@ This is a project crafted during a 24-hour GameJam contest organized by the UNIV
 - Other players act as normal horses, aiming to evade the infected horse's pursuit.
 
 ### How to Play:
-1. **Download** the `GameClient.zip`.
-2. **Extract** the `GameClient.zip` file.
+1. **Download** the `ChatVersion.zip`.
+2. **Extract** the `ChatVersion.zip` file.
 3. Once extracted, **launch** the game by clicking on `My project.exe` to start the client.
 
 ## Server Code （Golang）
