@@ -15,7 +15,7 @@ public class changeSense : MonoBehaviour
 
     public void StartGame()
     {
-        ChangeSceneWithDelay("Rule", 0.2f); // 替换为主游戏场景的名称
+        ChangeSceneWithDelay("Rule", 0.2f); // 切换到游戏规则场景
     }
 
     private IEnumerator LoadSceneAfterDelay(string sceneName, float delay)

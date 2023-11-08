@@ -15,6 +15,7 @@ type ClientAction struct {
 	Y         float64 `json:"Y"`
 	Direction float64 `json:"Direction"`
 	Order     int     `json:"Order"` // 新增字段
+	Message   string  `json:"Message"`
 }
 
 var clientCounter int = 0
@@ -108,6 +109,9 @@ func handleClient(conn net.Conn) {
 		// 如果收到感染消息，就广播给其他人，然后我不要这个人下线，它还可以看见其他人玩，但是我要禁止他给服务器发消息
 		if action.Action == "infected" {
 			//给其他人广播他被感染的消息，然后break，再给其他人广播他离开的消息
+			broadcastMessage(action)
+		}
+		if action.Action == "chat" {
 			broadcastMessage(action)
 		}
 		if action.Action == "move" {
