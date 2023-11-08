@@ -110,6 +110,10 @@ public class TCPConnection : MonoBehaviour
                 Debug.Log($"Leave action for PlayerID: {action.PlayerID}");
                 OtherPlayer.RemoveOtherPlayer(action.PlayerID);
                 break;
+            case "chat":
+                ChatController chatController = FindObjectOfType<ChatController>();
+                chatController.DisplayChatMessage(action.PlayerID, action.Message);
+                break;
         }
     }
 
@@ -159,4 +163,5 @@ public class ClientAction
     public float Y;
     public float Direction;
     public int Order;
+    public string Message;
 }

@@ -13,7 +13,7 @@ public class rule2Main : MonoBehaviour
 
     public void StartGame()
     {
-        ChangeSceneWithDelay("2Dmap", 0.2f); // 替换为您的主游戏场景的名称
+        ChangeSceneWithDelay("2Dmap", 0.2f); // 切换到游戏场景
     }
 
     private IEnumerator LoadSceneAfterDelay(string sceneName, float delay)
