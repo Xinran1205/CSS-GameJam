@@ -1,3 +1,6 @@
+
+<img src="/award certificate.jpg" alt="award certificate" width="250" height="160">
+
 # CSS-GameJam
 
 # UNIVERSITY OF BRISTOL COMPUTER SCIENCE SOCIETY GameJam
